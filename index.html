@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SkillTrade — Resource Trading & AI Study Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Warm Dark (default) */
+  --bg:#1b1510;
+  --surface:#261d14;
+  --surface2:#31261a;
+  --border:rgba(210,160,80,0.14);
+  --border2:rgba(210,160,80,0.30);
+  --cyan:#e8a030;
+  --cyan2:#c47c12;
+  --cyan-glow:rgba(232,160,48,0.13);
+  --gold:#f5c040;
+  --gold-dim:rgba(245,192,64,0.13);
+  --green:#5ebb88;
+  --green-dim:rgba(94,187,136,0.13);
+  --red:#e07878;
+  --red-dim:rgba(224,120,120,0.13);
+  --text:#e2cba8;
+  --text2:#9a7e58;
+  --white:#f8ecd4;
+  --nav-bg:rgba(27,21,16,0.88);
+  --nav-border:rgba(210,160,80,0.14);
+  --banner-bg:rgba(22,17,12,0.97);
+  --r:14px;
+  --font-h:'Syne',sans-serif;
+  --font-b:'DM Sans',sans-serif;
+  --font-m:'DM Mono',monospace;
+}
+html.light{
+  --bg:#f7f3ec;
+  --surface:#ffffff;
+  --surface2:#ede8de;
+  --border:rgba(160,108,48,0.15);
+  --border2:rgba(160,108,48,0.32);
+  --cyan:#b06a08;
+  --cyan2:#8f5407;
+  --cyan-glow:rgba(176,106,8,0.10);
+  --gold:#c48508;
+  --gold-dim:rgba(196,133,8,0.12);
+  --green:#2e8f5e;
+  --green-dim:rgba(46,143,94,0.12);
+  --red:#c24444;
+  --red-dim:rgba(194,68,68,0.10);
+  --text:#2a1a08;
+  --text2:#7a5c34;
+  --white:#1a0e04;
+  --nav-bg:rgba(247,243,236,0.92);
+  --nav-border:rgba(160,108,48,0.18);
+  --banner-bg:rgba(245,240,230,0.98);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:15px;line-height:1.65;min-height:100vh;overflow-x:hidden}
+button{cursor:pointer;border:none;outline:none;font-family:var(--font-b)}
+input,textarea,select{font-family:var(--font-b);outline:none}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.3);border-radius:3px}
+
+/* ── THEME TOGGLE ── */
+.theme-toggle{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);font-size:17px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .25s;flex-shrink:0;
+}
+.theme-toggle:hover{border-color:var(--border2);background:var(--cyan-glow);color:var(--cyan);transform:rotate(20deg)}
+html.light ::-webkit-scrollbar-thumb{background:rgba(160,108,48,0.3)}
+
+.view{display:none;min-height:100vh}
+.view.active{display:flex;flex-direction:column}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:64px;
+  background:var(--nav-bg);
+  border-bottom:1px solid var(--nav-border);
+  backdrop-filter:blur(16px);
+}
+.nav-logo{font-family:var(--font-h);font-weight:800;font-size:22px;color:var(--white);letter-spacing:-0.03em;cursor:pointer}
+.nav-logo span{color:var(--cyan)}
+.nav-links{display:flex;align-items:center;gap:6px}
+.nav-btn{padding:8px 18px;border-radius:999px;font-size:13px;font-weight:500;transition:all .2s}
+.nav-btn.ghost{background:transparent;color:var(--text2);border:1px solid transparent}
+.nav-btn.ghost:hover{background:var(--surface);color:var(--white);border-color:var(--border)}
+.nav-btn.primary{background:var(--cyan2);color:#fff;font-weight:600}
+.nav-btn.primary:hover{background:var(--cyan);transform:translateY(-1px)}
+.nav-btn.outline{background:transparent;color:var(--cyan);border:1px solid var(--border2)}
+.nav-btn.outline:hover{background:var(--cyan-glow)}
+.nav-user{display:flex;align-items:center;gap:10px}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--cyan2),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-weight:700;font-size:13px;color:#fff;cursor:pointer}
+
+/* ── HERO / LANDING ── */
+.hero-section{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:80px 24px;
+  position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(232,160,48,0.08) 0%,transparent 70%),
+             radial-gradient(ellipse 40% 30% at 80% 80%,rgba(245,192,64,0.06) 0%,transparent 60%);
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 16px;border-radius:999px;
+  border:1px solid var(--border2);background:var(--cyan-glow);
+  font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);
+  margin-bottom:28px;animation:fadeUp .7s .1s both;
+}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 2s infinite}
+.hero-title{
+  font-family:var(--font-h);font-weight:800;
+  font-size:clamp(52px,9vw,88px);line-height:.95;
+  letter-spacing:-.04em;color:var(--white);
+  margin-bottom:24px;animation:fadeUp .8s .25s both;
+}
+.hero-title .c{color:var(--cyan);text-shadow:0 0 50px rgba(232,160,48,.35)}
+.hero-sub{max-width:540px;font-size:17px;color:var(--text2);margin:0 auto 40px;animation:fadeUp .8s .4s both;line-height:1.7}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeUp .8s .55s both}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:12px;font-size:15px;font-weight:600;transition:all .2s;cursor:pointer;border:none}
+.btn-primary{background:var(--cyan2);color:#fff}
+.btn-primary:hover{background:var(--cyan);color:#fff;transform:translateY(-2px);box-shadow:0 8px 30px rgba(232,160,48,.3)}
+.btn-outline{background:transparent;color:var(--white);border:1px solid var(--border2)}
+.btn-outline:hover{background:var(--surface);border-color:var(--cyan)}
+.hero-stats{
+  display:flex;gap:40px;justify-content:center;margin-top:70px;
+  animation:fadeUp .8s .7s both;flex-wrap:wrap;
+}
+.stat{text-align:center}
+.stat-num{font-family:var(--font-h);font-size:32px;font-weight:800;color:var(--white)}
+.stat-num span{color:var(--cyan)}
+.stat-label{font-size:12px;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+
+/* ── FEATURES STRIP ── */
+.features{padding:60px 40px;background:var(--surface);border-top:1px solid var(--border)}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;max-width:960px;margin:0 auto}
+.feat-card{padding:24px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg);transition:all .25s}
+.feat-card:hover{border-color:var(--border2);transform:translateY(-3px)}
+.feat-icon{font-size:28px;margin-bottom:12px}
+.feat-title{font-family:var(--font-h);font-weight:700;font-size:15px;color:var(--white);margin-bottom:6px}
+.feat-desc{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* ── AUTH ── */
+.auth-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px;background:radial-gradient(ellipse at 50% 0%,rgba(232,160,48,0.06),transparent 60%)}
+.auth-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:44px 40px;width:100%;max-width:420px}
+.auth-logo{font-family:var(--font-h);font-size:28px;font-weight:800;color:var(--white);text-align:center;margin-bottom:8px}
+.auth-logo span{color:var(--cyan)}
+.auth-sub{text-align:center;color:var(--text2);font-size:14px;margin-bottom:32px}
+.auth-tabs{display:flex;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:28px}
+.auth-tab{flex:1;padding:9px;border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);background:none;border:none;cursor:pointer;transition:all .2s}
+.auth-tab.active{background:var(--surface2);color:var(--white)}
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);margin-bottom:7px}
+.form-input{
+  width:100%;padding:12px 16px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:10px;color:var(--white);font-size:14px;
+  transition:border-color .2s;
+}
+.form-input:focus{border-color:var(--cyan)}
+.form-input::placeholder{color:var(--text2)}
+.btn-full{width:100%;justify-content:center;padding:14px;font-size:15px}
+.auth-err{color:var(--red);font-size:13px;margin-top:10px;text-align:center;min-height:20px}
+.auth-switch{text-align:center;margin-top:18px;font-size:13px;color:var(--text2)}
+.auth-switch a{color:var(--cyan);cursor:pointer}
+
+/* ── DASHBOARD ── */
+.dash-layout{flex:1;display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 64px)}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:4px}
+.sidebar-section-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);padding:8px 12px;margin-top:8px}
+.sidebar-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:10px;
+  font-size:14px;font-weight:500;color:var(--text2);
+  cursor:pointer;transition:all .2s;
+}
+.sidebar-item:hover{background:var(--surface2);color:var(--white)}
+.sidebar-item.active{background:var(--cyan-glow);color:var(--cyan);border:1px solid rgba(56,189,248,.2)}
+.sidebar-item .s-icon{font-size:16px;width:20px;text-align:center}
+.sidebar-badge{margin-left:auto;background:var(--cyan2);color:#fff;border-radius:999px;font-size:10px;font-weight:700;padding:2px 7px}
+.dash-main{padding:32px;overflow-y:auto}
+
+/* ── DASH PANELS ── */
+.dash-panel{display:none}
+.dash-panel.active{display:block}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.panel-title{font-family:var(--font-h);font-size:26px;font-weight:800;color:var(--white);letter-spacing:-.02em}
+.panel-subtitle{font-size:14px;color:var(--text2);margin-top:2px}
+
+/* ── SEARCH / FILTER ── */
+.search-row{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap}
+.search-box{
+  display:flex;align-items:center;gap:10px;
+  flex:1;min-width:200px;
+  padding:10px 16px;
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+}
+.search-box input{background:none;border:none;color:var(--white);font-size:14px;flex:1}
+.search-box input::placeholder{color:var(--text2)}
+.filter-btn{padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap}
+.filter-btn.active,.filter-btn:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-glow)}
+
+/* ── RESOURCE CARDS ── */
+.resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.res-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:22px 20px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
+}
+.res-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);opacity:0;transition:.25s}
+.res-card:hover{transform:translateY(-4px);border-color:var(--border2);box-shadow:0 8px 40px rgba(232,160,48,.1)}
+.res-card:hover::before{opacity:1}
+.res-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
+.res-type-badge{padding:4px 11px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.05em}
+.type-pdf{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.type-pptx{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(251,191,36,.2)}
+.type-txt{background:var(--green-dim);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+.type-doc{background:var(--cyan-glow);color:var(--cyan);border:1px solid var(--border2)}
+.res-menu-btn{background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:2px 6px;border-radius:6px;transition:.15s;line-height:1}
+.res-menu-btn:hover{background:var(--surface2);color:var(--white)}
+.res-title{font-family:var(--font-h);font-weight:700;font-size:15px;color:var(--white);margin-bottom:6px;line-height:1.3}
+.res-desc{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.res-meta{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text2)}
+.res-uploader{display:flex;align-items:center;gap:6px}
+.res-avatar-sm{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--cyan2),var(--gold));display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff}
+.res-likes{display:flex;align-items:center;gap:4px;color:var(--text2)}
+.res-likes.liked{color:var(--red)}
+.res-footer{display:flex;gap:8px;margin-top:14px}
+.res-action-btn{flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:600;text-align:center;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;transition:all .2s}
+.res-action-btn.primary{background:var(--cyan2);color:#fff;border-color:transparent}
+.res-action-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.res-action-btn.primary:hover{background:var(--cyan)}
+
+/* ── UPLOAD ── */
+.upload-wrap{max-width:640px}
+.upload-zone{
+  border:2px dashed var(--border2);border-radius:16px;
+  padding:48px 32px;text-align:center;cursor:pointer;
+  transition:all .2s;background:var(--surface);margin-bottom:24px;
+  position:relative;
+}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--cyan);background:var(--cyan-glow)}
+.upload-icon{font-size:48px;margin-bottom:12px}
+.upload-label{font-family:var(--font-h);font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px}
+.upload-hint{font-size:13px;color:var(--text2)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.file-chosen{margin:-12px 0 24px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--white)}
+.file-chosen .fc-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fc-remove{background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px}
+
+/* ── AI HUB ── */
+.ai-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+@media(max-width:800px){.ai-wrap{grid-template-columns:1fr}}
+.ai-input-panel,.ai-output-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px}
+.ai-panel-title{font-family:var(--font-h);font-weight:700;font-size:16px;color:var(--white);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.ai-textarea{
+  width:100%;min-height:240px;padding:16px;
+  background:var(--bg);border:1px solid var(--border);border-radius:10px;
+  color:var(--text);font-size:14px;line-height:1.7;resize:vertical;
+  transition:border-color .2s;
+}
+.ai-textarea:focus{border-color:var(--cyan)}
+.ai-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.ai-mode-btn{
+  padding:14px 12px;border-radius:12px;border:1px solid var(--border);
+  background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .2s;text-align:center;
+}
+.ai-mode-btn:hover{border-color:var(--border2);color:var(--white)}
+.ai-mode-btn.selected{background:var(--cyan-glow);border-color:var(--cyan);color:var(--cyan)}
+.ai-mode-icon{font-size:22px;display:block;margin-bottom:6px}
+.btn-generate{
+  width:100%;padding:14px;border-radius:12px;
+  background:linear-gradient(135deg,var(--cyan),#8f5407);
+  color:#fff;font-weight:700;font-size:15px;
+  cursor:pointer;border:none;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-generate:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(232,160,48,.25)}
+.btn-generate:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ── AI OUTPUT ── */
+.ai-output-panel{min-height:400px}
+.ai-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;text-align:center;gap:12px;color:var(--text2)}
+.ai-placeholder-icon{font-size:48px;opacity:.3}
+.ai-placeholder p{font-size:14px}
+
+/* ── QUIZ ── */
+.quiz-wrap{padding:8px 0}
+.quiz-progress{margin-bottom:20px}
+.quiz-prog-bar{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.quiz-prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--gold));border-radius:2px;transition:width .4s ease}
+.quiz-prog-text{font-size:12px;color:var(--text2);margin-top:6px;font-family:var(--font-m)}
+.quiz-question-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px}
+.quiz-q-num{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px;font-family:var(--font-m)}
+.quiz-q-text{font-family:var(--font-h);font-size:18px;font-weight:700;color:var(--white);line-height:1.4}
+.quiz-options{display:flex;flex-direction:column;gap:10px}
+.quiz-option{
+  padding:14px 20px;border-radius:12px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);font-size:14px;
+  cursor:pointer;transition:all .2s;text-align:left;display:flex;align-items:center;gap:12px;
+}
+.quiz-option:hover:not(.answered){border-color:var(--cyan);background:var(--cyan-glow);color:var(--white)}
+.quiz-option.correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.quiz-option.wrong{border-color:var(--red);background:var(--red-dim);color:var(--red)}
+.quiz-option.selected-wrong{border-color:var(--red);background:var(--red-dim)}
+.opt-letter{width:28px;height:28px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.quiz-explanation{padding:14px 18px;background:var(--surface2);border-radius:10px;font-size:13px;color:var(--text);border-left:3px solid var(--cyan);margin-top:12px;display:none}
+.quiz-explanation.show{display:block}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.quiz-score{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:32px;text-align:center}
+.score-big{font-family:var(--font-h);font-size:64px;font-weight:800;color:var(--cyan)}
+.score-label{color:var(--text2);font-size:14px;margin-top:4px}
+
+/* ── FLASHCARDS ── */
+.fc-scene{perspective:1000px;margin-bottom:24px}
+.fc-card-3d{
+  width:100%;max-width:500px;margin:0 auto;
+  height:260px;position:relative;cursor:pointer;
+  transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,0,.2,1);
+}
+.fc-card-3d.flipped{transform:rotateY(180deg)}
+.fc-front,.fc-back{
+  position:absolute;inset:0;border-radius:20px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px;text-align:center;
+  backface-visibility:hidden;
+  border:1px solid var(--border);
+}
+.fc-front{background:var(--surface);border-color:var(--border2)}
+.fc-back{background:linear-gradient(135deg,rgba(232,160,48,.10),rgba(245,192,64,.06));border-color:rgba(232,160,48,.25);transform:rotateY(180deg)}
+.fc-hint{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:12px}
+.fc-text{font-family:var(--font-h);font-size:20px;font-weight:700;color:var(--white);line-height:1.3}
+.fc-back .fc-text{font-family:var(--font-b);font-size:16px;font-weight:400;color:var(--text);line-height:1.6}
+.fc-controls{display:flex;align-items:center;justify-content:space-between;max-width:500px;margin:0 auto}
+.fc-counter{font-family:var(--font-m);font-size:14px;color:var(--text2)}
+.fc-nav-btns{display:flex;gap:8px}
+.fc-btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);transition:all .2s}
+.fc-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.fc-btn.fc-got-it{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+.fc-btn.fc-again{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.fc-progress-dots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:16px;max-width:500px;margin-inline:auto}
+.fc-dot{width:8px;height:8px;border-radius:50%;background:var(--surface2);transition:all .3s}
+.fc-dot.known{background:var(--green)}
+.fc-dot.again{background:var(--red)}
+.fc-dot.current{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+
+/* ── SMART NOTES ── */
+.notes-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:32px;font-size:15px;line-height:1.8}
+.notes-wrap h1,.notes-wrap h2,.notes-wrap h3{font-family:var(--font-h);color:var(--white);margin:24px 0 10px}
+.notes-wrap h1{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:10px}
+.notes-wrap h2{font-size:19px;color:var(--cyan)}
+.notes-wrap h3{font-size:16px;color:var(--gold)}
+.notes-wrap p{color:var(--text);margin-bottom:12px}
+.notes-wrap ul,.notes-wrap ol{padding-left:22px;margin-bottom:12px;color:var(--text)}
+.notes-wrap li{margin-bottom:6px}
+.notes-wrap strong{color:var(--white)}
+.notes-wrap em{color:var(--cyan);font-style:normal}
+.notes-wrap code{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:2px 7px;font-family:var(--font-m);font-size:13px;color:var(--gold)}
+.notes-wrap blockquote{border-left:3px solid var(--cyan);padding-left:16px;color:var(--text2);margin:12px 0}
+
+/* ── LOADING SPINNER ── */
+.spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto}
+.loading-state{display:flex;flex-direction:column;align-items:center;gap:14px;padding:48px;color:var(--text2);font-size:14px}
+
+/* ── TOAST ── */
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast{padding:14px 20px;border-radius:12px;font-size:14px;font-weight:500;backdrop-filter:blur(10px);border:1px solid var(--border);animation:toastIn .3s ease;display:flex;align-items:center;gap:10px;max-width:320px}
+.toast.success{background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.35);color:var(--green)}
+.toast.error{background:rgba(248,113,113,.15);border-color:rgba(248,113,113,.35);color:var(--red)}
+.toast.info{background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.35);color:var(--cyan)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:480px;width:100%;animation:fadeUp .3s ease}
+.modal-title{font-family:var(--font-h);font-size:20px;font-weight:700;color:var(--white);margin-bottom:8px}
+.modal-body{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:64px 24px;color:var(--text2)}
+.empty-icon{font-size:56px;margin-bottom:16px;opacity:.4}
+.empty-title{font-family:var(--font-h);font-size:20px;font-weight:700;color:var(--white);margin-bottom:8px}
+.empty-sub{font-size:14px;margin-bottom:24px}
+
+/* ── MISC ── */
+.chip{display:inline-flex;align-items:center;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.05em}
+.chip-cyan{background:var(--cyan-glow);color:var(--cyan);border:1px solid rgba(56,189,248,.2)}
+.chip-gold{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(251,191,36,.2)}
+.chip-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:28px 0}
+.mt-16{margin-top:16px}.mt-24{margin-top:24px}.mt-32{margin-top:32px}.mb-16{margin-bottom:16px}
+.text-muted{color:var(--text2)}.text-cyan{color:var(--cyan)}.text-gold{color:var(--gold)}.text-white{color:var(--white)}
+.flex{display:flex}.items-center{align-items:center}.gap-8{gap:8px}.gap-12{gap:12px}.justify-between{justify-content:space-between}
+.fw-700{font-weight:700}.fh{font-family:var(--font-h)}
+select.form-input option{background:var(--surface);color:var(--white)}
+
+
+/* ── YOUTUBE NOTES ── */
+.yt-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+@media(max-width:860px){.yt-layout{grid-template-columns:1fr}}
+.yt-input-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.yt-embed-wrap{border-radius:12px;overflow:hidden;background:#000;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.yt-right .ai-output-panel{min-height:320px}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">Confirm</div>
+    <div class="modal-body" id="modal-body">Are you sure?</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" style="padding:10px 20px;font-size:14px" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" style="padding:10px 20px;font-size:14px;background:var(--red);color:#fff" id="modal-confirm-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  API KEY BANNER (always visible)       -->
+<!-- ═══════════════════════════════════════ -->
+<div id="api-banner" style="
+  position:fixed;bottom:0;left:0;right:0;z-index:500;
+  background:var(--banner-bg);border-top:1px solid var(--border2);
+  padding:10px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  backdrop-filter:blur(12px);
+">
+  <span style="font-size:12px;color:var(--text2);white-space:nowrap">🔑 Gemini API Key</span>
+  <input type="password" id="api-key-input" placeholder="AIza…  (get free key at aistudio.google.com)"
+    style="flex:1;min-width:260px;padding:8px 14px;border-radius:8px;border:1px solid rgba(56,189,248,0.25);
+    background:var(--surface);color:var(--white);font-size:13px;font-family:var(--font-m);outline:none;"
+    oninput="saveKey(this.value)"
+  />
+  <button onclick="document.getElementById('api-banner').style.display='none'"
+    style="background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:4px 8px;border-radius:6px"
+    title="Hide">✕</button>
+  <a href="https://aistudio.google.com/app/apikey" target="_blank"
+    style="font-size:12px;color:var(--cyan);white-space:nowrap;text-decoration:underline">Get free key →</a>
+</div>
+<div style="height:52px"></div><!-- spacer for banner -->
+
+<!-- ═══════════════════════════════════════ -->
+<!--  VIEW: LANDING                         -->
+<!-- ═══════════════════════════════════════ -->
+<div id="view-landing" class="view active">
+  <nav>
+    <div class="nav-logo" onclick="showView('landing')">Skill<span>Trade</span></div>
+    <div class="nav-links">
+      <button class="theme-toggle" id="theme-btn-landing" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+      <button class="nav-btn ghost" onclick="showView('auth','login')">Sign In</button>
+      <button class="nav-btn primary" onclick="showView('auth','register')">Get Started →</button>
+    </div>
+  </nav>
+  <div class="hero-section">
+    <div class="hero-bg"></div>
+    <div class="hero-tag">🎓 AI-Powered Study Platform</div>
+    <h1 class="hero-title">Learn Smarter.<br><span class="c">Trade Better.</span></h1>
+    <p class="hero-sub">Share study materials with peers, and let our AI engine instantly transform them into quizzes, flashcards, audiobooks, and smart notes.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="showView('auth','register')">Start for Free →</button>
+      <button class="btn btn-outline" onclick="guestBrowse()">Browse as Guest</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">4<span> Modes</span></div><div class="stat-label">AI Study Tools</div></div>
+      <div class="stat"><div class="stat-num">98<span>%</span></div><div class="stat-label">Satisfaction</div></div>
+    </div>
+  </div>
+  <div class="features">
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">🔄</div>
+        <div class="feat-title">Resource Trading</div>
+        <div class="feat-desc">Upload and trade PDFs, slides, and notes with students across universities.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🤖</div>
+        <div class="feat-title">AI Processing</div>
+        <div class="feat-desc">Our AI engine instantly converts any material into interactive study formats.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📝</div>
+        <div class="feat-title">Smart Quizzes</div>
+        <div class="feat-desc">Auto-generated MCQ quizzes with explanations for deep active recall.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🃏</div>
+        <div class="feat-title">Flashcards</div>
+        <div class="feat-desc">Spaced-repetition flashcards extracted directly from your materials.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📒</div>
+        <div class="feat-title">Smart Notes</div>
+        <div class="feat-desc">AI-structured summaries with key concepts, definitions, and highlights.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🎧</div>
+        <div class="feat-title">Audiobook Mode</div>
+        <div class="feat-desc">Text-to-speech conversion so you can study on the go, hands-free.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  VIEW: AUTH                            -->
+<!-- ═══════════════════════════════════════ -->
+<div id="view-auth" class="view">
+  <nav>
+    <div class="nav-logo" onclick="showView('landing')">Skill<span>Trade</span></div>
+    <div class="nav-links">
+      <button class="theme-toggle" id="theme-btn-auth" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+      <button class="nav-btn ghost" onclick="showView('landing')">← Back</button>
+    </div>
+  </nav>
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="auth-logo">Skill<span>Trade</span></div>
+      <div class="auth-sub">Your AI-powered study companion</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Register</button>
+      </div>
+      <!-- Login Form -->
+      <div id="form-login">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="login-email" placeholder="you@university.edu"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="login-password" placeholder="Enter password"/>
+        </div>
+        <div class="auth-err" id="login-err"></div>
+        <button class="btn btn-primary btn-full mt-16" onclick="doLogin()">Sign In →</button>
+        <div class="auth-switch mt-16">Don't have an account? <a onclick="switchAuthTab('register')">Register free</a></div>
+      </div>
+      <!-- Register Form -->
+      <div id="form-register" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="reg-name" placeholder="Akshit Sharma"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="reg-email" placeholder="you@university.edu"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="reg-password" placeholder="Min 6 characters"/>
+        </div>
+        <div class="auth-err" id="reg-err"></div>
+        <button class="btn btn-primary btn-full mt-16" onclick="doRegister()">Create Account →</button>
+        <div class="auth-switch mt-16">Already have an account? <a onclick="switchAuthTab('login')">Sign in</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  VIEW: DASHBOARD (Logged In)           -->
+<!-- ═══════════════════════════════════════ -->
+<div id="view-dashboard" class="view">
+  <nav>
+    <div class="nav-logo" onclick="openPanel('browse')">Skill<span>Trade</span></div>
+    <div class="nav-links">
+      <div class="nav-user">
+        <button class="theme-toggle" id="theme-btn-dash" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+        <span style="font-size:13px;color:var(--text2)" id="nav-username"></span>
+        <div class="nav-avatar" id="nav-avatar">U</div>
+        <button class="nav-btn ghost" onclick="doLogout()">Sign Out</button>
+      </div>
+    </div>
+  </nav>
+  <div class="dash-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section-label">Discover</div>
+      <div class="sidebar-item active" id="sb-browse" onclick="openPanel('browse')">
+        <span class="s-icon">🏛️</span> Browse Resources
+      </div>
+      <div class="sidebar-item" id="sb-myfiles" onclick="openPanel('myfiles')">
+        <span class="s-icon">📁</span> My Uploads
+      </div>
+      <div class="sidebar-section-label">Create & Study</div>
+      <div class="sidebar-item" id="sb-upload" onclick="openPanel('upload')">
+        <span class="s-icon">⬆️</span> Upload Resource
+      </div>
+      <div class="sidebar-item" id="sb-ai" onclick="openPanel('ai')">
+        <span class="s-icon">🤖</span> AI Study Hub
+        <span class="sidebar-badge">AI</span>
+      </div>
+      <div class="sidebar-item" id="sb-study" onclick="openPanel('study')">
+        <span class="s-icon">📖</span> Study Mode
+      </div>
+      <div class="sidebar-item" id="sb-yt" onclick="openPanel('yt')">
+        <span class="s-icon">&#9654;&#65039;</span> YouTube Notes
+        <span class="sidebar-badge" style="background:#ef4444;color:#fff">NEW</span>
+      </div>
+    </div>
+    <!-- MAIN CONTENT -->
+    <div class="dash-main">
+
+      <!-- BROWSE PANEL -->
+      <div class="dash-panel active" id="panel-browse">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Resource Marketplace</div>
+            <div class="panel-subtitle">Browse and trade study materials from peers</div>
+          </div>
+          <button class="btn btn-primary" style="padding:10px 20px;font-size:14px" onclick="openPanel('upload')">+ Upload</button>
+        </div>
+        <div class="search-row">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" id="browse-search" placeholder="Search resources..." oninput="filterResources()"/>
+          </div>
+          <button class="filter-btn active" data-filter="all" onclick="setFilter(this,'all')">All</button>
+          <button class="filter-btn" data-filter="pdf" onclick="setFilter(this,'pdf')">PDF</button>
+          <button class="filter-btn" data-filter="pptx" onclick="setFilter(this,'pptx')">PPTX</button>
+          <button class="filter-btn" data-filter="txt" onclick="setFilter(this,'txt')">TXT</button>
+        </div>
+        <div class="resources-grid" id="resources-grid"></div>
+      </div>
+
+      <!-- MY FILES PANEL -->
+      <div class="dash-panel" id="panel-myfiles">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">My Uploads</div>
+            <div class="panel-subtitle">Resources you've shared with the community</div>
+          </div>
+          <button class="btn btn-primary" style="padding:10px 20px;font-size:14px" onclick="openPanel('upload')">+ New Upload</button>
+        </div>
+        <div class="resources-grid" id="myfiles-grid"></div>
+      </div>
+
+      <!-- UPLOAD PANEL -->
+      <div class="dash-panel" id="panel-upload">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Upload Resource</div>
+            <div class="panel-subtitle">Share your study materials with the community</div>
+          </div>
+        </div>
+        <div class="upload-wrap">
+          <div class="upload-zone" id="upload-zone">
+            <input type="file" id="upload-file-input" accept=".pdf,.pptx,.txt,.doc,.docx" onchange="handleFileSelect(event)"/>
+            <div class="upload-icon">📄</div>
+            <div class="upload-label">Drop your file here</div>
+            <div class="upload-hint">Supports PDF, PPTX, TXT, DOC • Max 50MB</div>
+          </div>
+          <div id="file-chosen-row" style="display:none" class="file-chosen">
+            <span>📎</span>
+            <span class="fc-name" id="fc-name-display"></span>
+            <button class="fc-remove" onclick="clearFile()">✕</button>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Resource Title *</label>
+            <input type="text" class="form-input" id="up-title" placeholder="e.g. Data Structures – Full Notes"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-input" id="up-desc" rows="3" placeholder="What's in this resource? Who is it for?"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject / Category</label>
+            <select class="form-input" id="up-subject">
+              <option value="Computer Science">Computer Science</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Physics">Physics</option>
+              <option value="Chemistry">Chemistry</option>
+              <option value="Business">Business</option>
+              <option value="Economics">Economics</option>
+              <option value="Biology">Biology</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Paste Content (for AI processing)</label>
+            <textarea class="ai-textarea" id="up-content" placeholder="Paste the text content of your material here. This is used by the AI to generate quizzes, flashcards, and smart notes for other students..." style="min-height:160px"></textarea>
+          </div>
+          <button class="btn btn-primary" style="padding:14px 32px;font-size:15px" onclick="doUpload()">🚀 Share Resource</button>
+        </div>
+      </div>
+
+      <!-- AI HUB PANEL -->
+      <div class="dash-panel" id="panel-ai">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">AI Study Hub</div>
+            <div class="panel-subtitle">Transform any content into powerful study materials</div>
+          </div>
+        </div>
+        <div class="ai-wrap">
+          <div class="ai-input-panel">
+            <div class="ai-panel-title">🗒️ Input Content</div>
+            <div class="form-group">
+              <label class="form-label">From Resource</label>
+              <select class="form-input" id="ai-res-select" onchange="loadResourceContent()">
+                <option value="">— or pick a resource —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Or Paste Your Text</label>
+              <textarea class="ai-textarea" id="ai-text-input" placeholder="Paste any study material, notes, chapter, or topic here. The more content, the better the output..."></textarea>
+            </div>
+            <div style="margin:16px 0 12px">
+              <label class="form-label">Generate Mode</label>
+            </div>
+            <div class="ai-mode-grid">
+              <button class="ai-mode-btn selected" data-mode="quiz" onclick="selectMode(this,'quiz')">
+                <span class="ai-mode-icon">📝</span>Quiz
+              </button>
+              <button class="ai-mode-btn" data-mode="flashcards" onclick="selectMode(this,'flashcards')">
+                <span class="ai-mode-icon">🃏</span>Flashcards
+              </button>
+              <button class="ai-mode-btn" data-mode="notes" onclick="selectMode(this,'notes')">
+                <span class="ai-mode-icon">📒</span>Smart Notes
+              </button>
+              <button class="ai-mode-btn" data-mode="audio" onclick="selectMode(this,'audio')">
+                <span class="ai-mode-icon">🎧</span>Audiobook
+              </button>
+            </div>
+            <button class="btn-generate mt-16" id="btn-generate" onclick="generateAI()">
+              <span id="gen-btn-text">✨ Generate</span>
+            </button>
+          </div>
+          <div class="ai-output-panel" id="ai-output-panel">
+            <div class="ai-placeholder" id="ai-placeholder">
+              <div class="ai-placeholder-icon">✨</div>
+              <p>Your AI-generated study material<br>will appear here</p>
+            </div>
+            <div id="ai-result-container" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STUDY PANEL -->
+      <div class="dash-panel" id="panel-study">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Study Mode</div>
+            <div class="panel-subtitle">Your active study sessions</div>
+          </div>
+        </div>
+        <div id="study-select-msg" class="empty-state">
+          <div class="empty-icon">📖</div>
+          <div class="empty-title">No Active Study Session</div>
+          <div class="empty-sub">Go to the AI Hub, generate quizzes or flashcards,<br>then click "Start Studying"</div>
+          <button class="btn btn-primary" onclick="openPanel('ai')">Go to AI Hub →</button>
+        </div>
+        <div id="study-content" style="display:none"></div>
+      </div>
+
+
+      <!-- YOUTUBE NOTES PANEL -->
+      <div class="dash-panel" id="panel-yt">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">YouTube Notes ▶️</div>
+            <div class="panel-subtitle">Paste a YouTube link — we fetch the transcript and generate AI notes</div>
+          </div>
+        </div>
+        <div class="yt-layout">
+          <!-- Left: input + video -->
+          <div class="yt-left">
+            <div class="yt-input-row">
+              <div class="search-box" style="flex:1">
+                <span>🔗</span>
+                <input type="text" id="yt-url-input" placeholder="https://www.youtube.com/watch?v=..." />
+              </div>
+              <button class="btn btn-primary" id="yt-load-btn" onclick="loadYTVideo()" style="padding:10px 22px;font-size:14px;white-space:nowrap">Load Video</button>
+            </div>
+            <div id="yt-video-container" style="display:none">
+              <div class="yt-embed-wrap" style="position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--border);aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center;">
+                <img id="yt-thumb-img" src="" alt="Video thumbnail" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+                <a id="yt-watch-link" href="#" target="_blank" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);text-decoration:none;transition:background .2s;" onmouseover="this.style.background='rgba(0,0,0,0.6)'" onmouseout="this.style.background='rgba(0,0,0,0.45)'">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+                    <div style="width:64px;height:64px;background:#ff0000;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.5)">
+                      <span style="color:#fff;font-size:26px;margin-left:4px">▶</span>
+                    </div>
+                    <span style="color:#fff;font-size:13px;font-weight:600;letter-spacing:.03em;background:rgba(0,0,0,0.6);padding:4px 12px;border-radius:20px">Watch on YouTube</span>
+                  </div>
+                </a>
+              </div>
+              <div id="yt-video-meta" style="margin-top:14px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+                <div class="fh fw-700 text-white" id="yt-video-title" style="font-size:16px;margin-bottom:4px"></div>
+                <div class="text-muted" id="yt-video-author" style="font-size:13px"></div>
+              </div>
+            </div>
+            <!-- Transcript area -->
+            <div id="yt-transcript-section" style="display:none;margin-top:20px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                <label class="form-label" style="margin:0">Transcript / Content</label>
+                <span id="yt-transcript-status" style="font-size:12px;color:var(--text2)"></span>
+              </div>
+              <textarea class="ai-textarea" id="yt-transcript-input" style="min-height:180px" placeholder="Transcript will auto-load here. If it doesn't, paste it manually — go to the video on YouTube, click '...' → 'Show transcript', copy and paste it here."></textarea>
+              <div style="margin-top:8px;padding:10px 14px;background:var(--gold-dim);border:1px solid rgba(251,191,36,.2);border-radius:8px;font-size:12px;color:var(--gold)">
+                💡 <strong>Can't auto-fetch?</strong> On YouTube: click the video → <strong>⋯ More → Show transcript</strong> → copy all → paste above.
+              </div>
+            </div>
+          </div>
+          <!-- Right: AI output -->
+          <div class="yt-right">
+            <div class="ai-input-panel" style="margin-bottom:16px">
+              <div class="ai-panel-title" style="margin-bottom:14px">🤖 Generate From Video</div>
+              <div class="ai-mode-grid">
+                <button class="ai-mode-btn selected" data-ytmode="notes" onclick="selectYTMode(this,'notes')"><span class="ai-mode-icon">📒</span>Smart Notes</button>
+                <button class="ai-mode-btn" data-ytmode="quiz" onclick="selectYTMode(this,'quiz')"><span class="ai-mode-icon">📝</span>Quiz</button>
+                <button class="ai-mode-btn" data-ytmode="flashcards" onclick="selectYTMode(this,'flashcards')"><span class="ai-mode-icon">🃏</span>Flashcards</button>
+                <button class="ai-mode-btn" data-ytmode="summary" onclick="selectYTMode(this,'summary')"><span class="ai-mode-icon">✂️</span>Summary</button>
+              </div>
+              <button class="btn-generate mt-16" id="yt-gen-btn" onclick="generateYTNotes()" disabled>
+                <span id="yt-gen-text">Load a video first</span>
+              </button>
+            </div>
+            <div class="ai-output-panel" id="yt-output-panel">
+              <div class="ai-placeholder" id="yt-placeholder">
+                <div class="ai-placeholder-icon">▶️</div>
+                <p>Load a YouTube video<br>then hit Generate</p>
+              </div>
+              <div id="yt-result-container" style="display:none"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end dash-main -->
+  </div><!-- end dash-layout -->
+</div><!-- end view-dashboard -->
+
+<script>
+// ═══════════════════════════════
+// STATE
+// ═══════════════════════════════
+const STATE = {
+  currentUser: null,
+  users: JSON.parse(localStorage.getItem('st_users')||'[]'),
+  resources: JSON.parse(localStorage.getItem('st_resources')||'[]'),
+  activeFilter: 'all',
+  selectedMode: 'quiz',
+  generatedData: null,
+  studySession: null,
+  quizState: null,
+  flashState: null,
+  speechSynth: window.speechSynthesis || null,
+  speaking: false,
+};
+
+// ── Seed sample resources if empty ──
+if (!STATE.resources.length) {
+  STATE.resources = [
+    { id:'r1', title:'Data Structures & Algorithms – Complete Notes', desc:'Covers arrays, linked lists, trees, graphs, sorting & searching algorithms with examples and complexity analysis.', type:'pdf', subject:'Computer Science', uploader:'Akshit Sharma', uploaderInitial:'AS', likes:42, content:'Data Structures are ways of organizing data so it can be accessed and modified efficiently. An array is a collection of items stored at contiguous memory locations. Linked Lists are linear data structures where elements are stored in nodes. Each node contains data and a pointer to the next node. Stack is a linear data structure which follows LIFO order. Queue follows FIFO. Trees are hierarchical data structures. Binary Search Tree is a tree where left child is smaller and right child is larger. Graphs consist of vertices and edges. BFS uses a queue, DFS uses a stack. Sorting algorithms include Bubble Sort O(n2), Merge Sort O(nlogn), Quick Sort O(nlogn) average. Binary Search runs in O(logn). Dynamic Programming breaks problems into overlapping subproblems.', date:'2025-03-10', likedBy:[] },
+    { id:'r2', title:'Calculus – Limits, Derivatives & Integrals', desc:'Comprehensive coverage of differential and integral calculus with solved problems and theorems.', type:'pdf', subject:'Mathematics', uploader:'Archit Sublok', uploaderInitial:'AR', likes:31, content:'Calculus is the branch of mathematics studying continuous change. A limit is the value that a function approaches as the input approaches some value. The derivative measures the sensitivity to change of the function value with respect to a change in its argument. The derivative of x^n is nx^(n-1). Integration is the reverse of differentiation. The integral of x^n is x^(n+1)/(n+1). The Fundamental Theorem of Calculus connects differentiation and integration. Chain rule states d/dx[f(g(x))] = f\'(g(x)) * g\'(x). Product rule: d/dx[uv] = u\'v + uv\'. Quotient rule: d/dx[u/v] = (u\'v - uv\')/v^2. Integration by parts: integral(u dv) = uv - integral(v du).', date:'2025-03-15', likedBy:[] },
+    { id:'r3', title:'Operating Systems – Process & Memory Management', desc:'Key concepts in OS including process scheduling, memory management, deadlocks, and file systems.', type:'pptx', subject:'Computer Science', uploader:'Jagrit Sood', uploaderInitial:'JS', likes:58, content:'An Operating System is system software that manages computer hardware and software resources. A process is a program in execution. Process states: New, Ready, Running, Waiting, Terminated. CPU Scheduling algorithms include FCFS, SJF, Round Robin, and Priority Scheduling. Memory Management techniques include contiguous allocation, paging, and segmentation. Virtual Memory allows execution of processes not fully in memory. Deadlock occurs when processes wait for resources held by each other. Deadlock conditions: Mutual Exclusion, Hold and Wait, No Preemption, Circular Wait. File systems organize data on storage devices. UNIX uses inode-based file system.', date:'2025-03-20', likedBy:[] },
+    { id:'r4', title:'Macroeconomics – GDP, Inflation & Fiscal Policy', desc:'Detailed notes on national income accounting, monetary policy, inflation, and economic growth models.', type:'txt', subject:'Economics', uploader:'Narendra Modi', uploaderInitial:'AS', likes:19, content:'Macroeconomics studies the behavior of the economy as a whole. GDP (Gross Domestic Product) is the total monetary value of all goods and services produced in a country in a given period. GDP = C + I + G + (X-M). Inflation is the rate at which the general level of prices rises. CPI measures the average change in prices paid by consumers. Monetary Policy is controlled by the central bank to regulate money supply and interest rates. Fiscal Policy involves government spending and taxation. Keynesian economics advocates government intervention to stabilize the economy. The Phillips Curve shows inverse relationship between unemployment and inflation. Economic growth is measured by the percentage increase in real GDP.', date:'2025-03-22', likedBy:[] },
+    { id:'r5', title:'Organic Chemistry – Reaction Mechanisms', desc:'All major organic reactions with mechanisms, reagents, and stereochemistry explained clearly.', type:'pdf', subject:'Chemistry', uploader:'Georgia Meloni', uploaderInitial:'AR', likes:27, content:'Organic Chemistry is the study of carbon compounds. Functional groups determine chemical properties. Alkanes are saturated hydrocarbons. Alkenes contain double bonds and undergo addition reactions. Alkynes contain triple bonds. Aromatic compounds have conjugated pi systems. SN1 reactions proceed through a carbocation intermediate. SN2 reactions involve backside attack and inversion of configuration. Elimination reactions form double bonds. Aldehydes and ketones undergo nucleophilic addition. Carboxylic acids are weak acids. Esters are formed by reaction with alcohols. Amines are nitrogen-containing bases. Polymers are large molecules made of repeating units.', date:'2025-03-25', likedBy:[] },
+    { id:'r6', title:'Digital Electronics – Logic Gates & Circuits', desc:'From basic logic gates to sequential circuits, flip-flops, and digital system design.', type:'txt', subject:'Computer Science', uploader:'Jagrit Sood', uploaderInitial:'JS', likes:35, content:'Digital Electronics deals with circuits that operate on digital signals. Logic gates are the building blocks. AND gate outputs 1 only if all inputs are 1. OR gate outputs 1 if any input is 1. NOT gate inverts the input. NAND and NOR are universal gates. XOR gate outputs 1 if inputs are different. Boolean Algebra is used to simplify logic circuits. De Morgan\'s theorem: NOT(A AND B) = NOT A OR NOT B. Karnaugh Maps simplify Boolean expressions. Combinational circuits include half adder, full adder, encoder, decoder, multiplexer. Sequential circuits use flip-flops. D flip-flop, JK flip-flop, T flip-flop are common types. Registers store binary data. Counters count clock pulses.', date:'2025-03-28', likedBy:[] },
+  ];
+  saveResources();
+}
+
+function saveResources(){ localStorage.setItem('st_resources', JSON.stringify(STATE.resources)); }
+function saveUsers(){ localStorage.setItem('st_users', JSON.stringify(STATE.users)); }
+
+// ═══════════════════════════════
+// ROUTING
+// ═══════════════════════════════
+function showView(name, tab){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  if(name==='auth'&&tab) switchAuthTab(tab);
+  if(name==='dashboard'){ renderDashboard(); }
+}
+
+function guestBrowse(){
+  STATE.currentUser = { name:'Guest', email:'guest', role:'guest', initials:'G' };
+  showView('dashboard');
+  openPanel('browse');
+}
+
+// ═══════════════════════════════
+// AUTH
+// ═══════════════════════════════
+function switchAuthTab(tab){
+  document.getElementById('form-login').style.display = tab==='login'?'block':'none';
+  document.getElementById('form-register').style.display = tab==='register'?'block':'none';
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+}
+
+function doLogin(){
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-err');
+  errEl.textContent = '';
+  if(!email||!pass){ errEl.textContent='Please fill all fields.'; return; }
+  const user = STATE.users.find(u=>u.email===email&&u.password===pass);
+  if(!user){ errEl.textContent='Invalid email or password.'; return; }
+  STATE.currentUser = user;
+  showView('dashboard');
+  toast('Welcome back, '+user.name.split(' ')[0]+'!','success');
+}
+
+function doRegister(){
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-password').value;
+  const errEl = document.getElementById('reg-err');
+  errEl.textContent = '';
+  if(!name||!email||!pass){ errEl.textContent='Please fill all fields.'; return; }
+  if(pass.length<6){ errEl.textContent='Password must be at least 6 characters.'; return; }
+  if(STATE.users.find(u=>u.email===email)){ errEl.textContent='Email already registered.'; return; }
+  const user = { name, email, password:pass, initials: name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() };
+  STATE.users.push(user); saveUsers();
+  STATE.currentUser = user;
+  showView('dashboard');
+  toast('Account created! Welcome, '+name.split(' ')[0]+'!','success');
+}
+
+function doLogout(){
+  STATE.currentUser = null;
+  showView('landing');
+  toast('Signed out successfully','info');
+}
+
+// ═══════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════
+function renderDashboard(){
+  const u = STATE.currentUser;
+  if(!u) return;
+  document.getElementById('nav-username').textContent = u.name;
+  document.getElementById('nav-avatar').textContent = u.initials||u.name[0];
+  renderResources();
+  renderMyFiles();
+  populateAIResourceSelect();
+}
+
+function openPanel(name){
+  document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  const sbEl = document.getElementById('sb-'+name);
+  if(sbEl) sbEl.classList.add('active');
+  if(name==='browse') renderResources();
+  if(name==='myfiles') renderMyFiles();
+  if(name==='ai') populateAIResourceSelect();
+}
+
+// ═══════════════════════════════
+// RESOURCE CARDS
+// ═══════════════════════════════
+function renderResources(){
+  const query  = (document.getElementById('browse-search')||{value:''}).value.toLowerCase();
+  const filter = STATE.activeFilter;
+  const list = STATE.resources.filter(r=>{
+    const matchQ = !query || r.title.toLowerCase().includes(query)||r.desc.toLowerCase().includes(query)||r.subject.toLowerCase().includes(query);
+    const matchF = filter==='all' || r.type===filter;
+    return matchQ&&matchF;
+  });
+  const grid = document.getElementById('resources-grid');
+  if(!grid) return;
+  if(!list.length){ grid.innerHTML=emptyState('No resources found','Try a different search or filter.'); return; }
+  grid.innerHTML = list.map(r=>resCard(r)).join('');
+}
+
+function renderMyFiles(){
+  const grid = document.getElementById('myfiles-grid');
+  if(!grid) return;
+  const u = STATE.currentUser;
+  if(!u||u.role==='guest'){ grid.innerHTML=emptyState('Guest View','Sign in to see your uploads.'); return; }
+  const mine = STATE.resources.filter(r=>r.uploader===u.name);
+  if(!mine.length){ grid.innerHTML=`<div class="empty-state"><div class="empty-icon">📁</div><div class="empty-title">No uploads yet</div><div class="empty-sub">Share your first resource with the community</div><button class="btn btn-primary" onclick="openPanel('upload')">Upload Now</button></div>`; return; }
+  grid.innerHTML = mine.map(r=>resCard(r, true)).join('');
+}
+
+function resCard(r, showDelete=false){
+  const typeMap = { pdf:'type-pdf', pptx:'type-pptx', txt:'type-txt', doc:'type-doc', docx:'type-doc' };
+  const cls = typeMap[r.type]||'type-doc';
+  const liked = STATE.currentUser && r.likedBy && r.likedBy.includes(STATE.currentUser.email);
+  return `<div class="res-card" style="--grad:linear-gradient(90deg,var(--cyan),var(--gold))">
+    <div class="res-card-top">
+      <span class="res-type-badge ${cls}">${r.type.toUpperCase()}</span>
+      <button class="res-menu-btn" title="Options">⋯</button>
+    </div>
+    <div class="res-title">${r.title}</div>
+    <div class="res-desc">${r.desc}</div>
+    <div style="margin-bottom:12px"><span class="chip chip-cyan" style="font-size:10px">${r.subject}</span></div>
+    <div class="res-meta">
+      <div class="res-uploader"><div class="res-avatar-sm">${r.uploaderInitial||r.uploader[0]}</div><span>${r.uploader}</span></div>
+      <div class="res-likes ${liked?'liked':''}" onclick="toggleLike('${r.id}',event)" title="Like">♥ ${r.likes}</div>
+    </div>
+    <div class="res-footer">
+      <button class="res-action-btn primary" onclick="studyThis('${r.id}')">📖 Study</button>
+      <button class="res-action-btn" onclick="loadToAIHub('${r.id}')">🤖 AI</button>
+      ${showDelete?`<button class="res-action-btn" style="color:var(--red);border-color:var(--red)" onclick="deleteRes('${r.id}')">🗑️</button>`:''}
+    </div>
+  </div>`;
+}
+
+function emptyState(title, sub){
+  return `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-title">${title}</div><div class="empty-sub">${sub}</div></div>`;
+}
+
+function filterResources(){ renderResources(); }
+function setFilter(btn, filter){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  STATE.activeFilter = filter;
+  renderResources();
+}
+
+function toggleLike(id, e){
+  e.stopPropagation();
+  const u = STATE.currentUser;
+  if(!u||u.role==='guest'){ toast('Sign in to like resources','info'); return; }
+  const r = STATE.resources.find(x=>x.id===id);
+  if(!r) return;
+  r.likedBy = r.likedBy||[];
+  const idx = r.likedBy.indexOf(u.email);
+  if(idx>-1){ r.likedBy.splice(idx,1); r.likes--; }
+  else{ r.likedBy.push(u.email); r.likes++; }
+  saveResources(); renderResources();
+}
+
+function deleteRes(id){
+  showModal('Delete Resource','Are you sure you want to delete this resource? This cannot be undone.','Delete',()=>{
+    STATE.resources = STATE.resources.filter(r=>r.id!==id);
+    saveResources(); renderMyFiles(); renderResources();
+    toast('Resource deleted','info');
+  });
+}
+
+// ═══════════════════════════════
+// UPLOAD
+// ═══════════════════════════════
+let selectedFile = null;
+function handleFileSelect(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  selectedFile = file;
+  document.getElementById('file-chosen-row').style.display='flex';
+  document.getElementById('fc-name-display').textContent = file.name;
+  const ext = file.name.split('.').pop().toLowerCase();
+  if(ext==='txt'){
+    const reader = new FileReader();
+    reader.onload = ev => { document.getElementById('up-content').value = ev.target.result.slice(0,8000); };
+    reader.readAsText(file);
+  }
+}
+function clearFile(){ selectedFile=null; document.getElementById('upload-file-input').value=''; document.getElementById('file-chosen-row').style.display='none'; }
+
+function doUpload(){
+  const u = STATE.currentUser;
+  if(!u||u.role==='guest'){ toast('Please sign in to upload','info'); return; }
+  const title   = document.getElementById('up-title').value.trim();
+  const desc    = document.getElementById('up-desc').value.trim();
+  const subject = document.getElementById('up-subject').value;
+  const content = document.getElementById('up-content').value.trim();
+  if(!title){ toast('Please enter a resource title','error'); return; }
+  const ext = selectedFile ? selectedFile.name.split('.').pop().toLowerCase() : 'txt';
+  const res = {
+    id:'r'+Date.now(), title,
+    desc: desc||'Shared by '+u.name,
+    type: ext==='pptx'?'pptx':ext==='pdf'?'pdf':ext,
+    subject, uploader:u.name,
+    uploaderInitial: u.initials||u.name[0],
+    likes:0, likedBy:[], content, date:new Date().toISOString().slice(0,10),
+  };
+  STATE.resources.unshift(res); saveResources();
+  document.getElementById('up-title').value='';
+  document.getElementById('up-desc').value='';
+  document.getElementById('up-content').value='';
+  clearFile();
+  toast('Resource shared successfully!','success');
+  openPanel('browse');
+}
+
+// ─── Drag-drop ───
+const upZone = document.getElementById('upload-zone');
+upZone.addEventListener('dragover',e=>{e.preventDefault();upZone.classList.add('dragover')});
+upZone.addEventListener('dragleave',()=>upZone.classList.remove('dragover'));
+upZone.addEventListener('drop',e=>{e.preventDefault();upZone.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);document.getElementById('upload-file-input').files=dt.files;handleFileSelect({target:{files:[f]}})}});
+
+// ═══════════════════════════════
+// SHORTCUT BUTTONS
+// ═══════════════════════════════
+function loadToAIHub(id){
+  const r = STATE.resources.find(x=>x.id===id);
+  if(!r){ toast('Resource not found','error'); return; }
+  openPanel('ai');
+  document.getElementById('ai-text-input').value = r.content||'';
+  const sel = document.getElementById('ai-res-select');
+  if(sel) sel.value = id;
+  toast('Resource loaded into AI Hub','success');
+}
+
+function studyThis(id){
+  const r = STATE.resources.find(x=>x.id===id);
+  if(!r){ toast('Resource not found','error'); return; }
+  if(!r.content){ toast('No text content available. Paste content when uploading to enable AI study.','info'); return; }
+  openPanel('ai');
+  document.getElementById('ai-text-input').value = r.content||'';
+  const sel = document.getElementById('ai-res-select');
+  if(sel) sel.value = id;
+  toast('Resource ready in AI Hub — choose a mode and generate!','info');
+}
+
+function populateAIResourceSelect(){
+  const sel = document.getElementById('ai-res-select');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— or pick a resource —</option>';
+  STATE.resources.forEach(r=>{
+    if(r.content) sel.innerHTML += `<option value="${r.id}">${r.title}</option>`;
+  });
+}
+
+function loadResourceContent(){
+  const id = document.getElementById('ai-res-select').value;
+  if(!id) return;
+  const r = STATE.resources.find(x=>x.id===id);
+  if(r&&r.content) document.getElementById('ai-text-input').value = r.content;
+}
+
+// ═══════════════════════════════
+// AI GENERATION  (Gemini API)
+// ═══════════════════════════════
+function selectMode(btn, mode){
+  document.querySelectorAll('.ai-mode-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  STATE.selectedMode = mode;
+}
+
+async function generateAI(){
+  const text = document.getElementById('ai-text-input').value.trim();
+  if(!text||text.length<30){ toast('Please enter at least a few sentences of content','error'); return; }
+  const mode = STATE.selectedMode;
+
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  document.getElementById('gen-btn-text').textContent = 'Generating...';
+
+  document.getElementById('ai-placeholder').style.display='none';
+  document.getElementById('ai-result-container').style.display='block';
+  document.getElementById('ai-result-container').innerHTML=`<div class="loading-state"><div class="spinner"></div><p>AI is processing your content…</p></div>`;
+
+  const prompts = {
+    quiz: `You are an expert educational AI. Read the following study content and generate a quiz.
+Return ONLY valid JSON with this structure (no markdown, no explanation, just raw JSON):
+{"questions":[{"q":"question text","options":["A. option","B. option","C. option","D. option"],"answer":0,"explanation":"brief explanation"}]}
+Generate 6 high-quality multiple choice questions. The "answer" field is the index (0-3) of the correct option.
+Content: ${text.slice(0,4000)}`,
+
+    flashcards: `You are an expert educational AI. Read the following study content and create flashcards.
+Return ONLY valid JSON with this structure (no markdown, no explanation, just raw JSON):
+{"flashcards":[{"front":"term or concept","back":"clear definition or explanation"}]}
+Generate 10 flashcards covering key terms, concepts, and facts from the content.
+Content: ${text.slice(0,4000)}`,
+
+    notes: `You are an expert educational AI. Read the following study content and create structured smart notes.
+Return a well-formatted markdown document with:
+- A clear title with #
+- Key sections with ## headings
+- Important terms in **bold**
+- Key facts as bullet lists
+- A "Key Takeaways" section at the end
+Make it comprehensive and well-organized.
+Content: ${text.slice(0,4000)}`,
+
+    audio: `You are an expert educational AI. Read the following study content and write an audiobook-style narration.
+Return a friendly, conversational script that explains the content as if speaking to a student. Use simple language, add context, and make it engaging. Do NOT use bullet points or headers — write it as flowing spoken paragraphs.
+Content: ${text.slice(0,4000)}`,
+  };
+
+  const apiKey = getKey();
+  if(!apiKey || !apiKey.startsWith('AIza')){
+    document.getElementById('ai-result-container').innerHTML=`<div class="ai-placeholder"><div class="ai-placeholder-icon">🔑</div><p style="color:var(--gold)"><strong>API Key Required</strong></p><p style="font-size:13px;margin-top:8px">Paste your Gemini API key in the bar at the bottom of the page.<br>Get a free key at <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--cyan)">aistudio.google.com</a></p></div>`;
+    btn.disabled=false;
+    document.getElementById('gen-btn-text').textContent='✨ Generate';
+    return;
+  }
+
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+      },
+      body: JSON.stringify({
+        contents:[{parts:[{text: prompts[mode]}]}],
+        generationConfig:{ maxOutputTokens:2000 }
+      })
+    });
+    let data;
+    try { data = await response.json(); } catch(jsonErr) {
+      throw new Error('Server returned non-JSON response (status '+response.status+')');
+    }
+    if(!response.ok || data.error){
+      const msg = (data.error && (data.error.message || JSON.stringify(data.error))) || ('HTTP '+response.status);
+      throw new Error(msg);
+    }
+    if(!data.candidates || !data.candidates[0]){
+      throw new Error('Unexpected response shape: '+JSON.stringify(data).slice(0,200));
+    }
+    const raw = data.candidates[0].content.parts.map(p=>p.text||'').join('');
+    if(!raw) throw new Error('Empty response from API');
+    STATE.generatedData = { mode, raw };
+    renderAIOutput(mode, raw, text);
+  } catch(err){
+    document.getElementById('ai-result-container').innerHTML=`<div class="ai-placeholder"><div class="ai-placeholder-icon">❌</div><p style="color:var(--red);font-weight:600">Generation Failed</p><p style="font-size:12px;margin-top:8px;color:var(--text2);font-family:var(--font-m);word-break:break-all;white-space:pre-wrap">${err.message}</p></div>`;
+    toast('Error: '+err.message,'error');
+  } finally {
+    btn.disabled=false;
+    document.getElementById('gen-btn-text').textContent='✨ Generate';
+  }
+}
+
+function renderAIOutput(mode, raw, originalText){
+  const container = document.getElementById('ai-result-container');
+  if(mode==='quiz'){
+    try{
+      const clean = raw.replace(/```json|```/g,'').trim();
+      const json = JSON.parse(clean);
+      STATE.generatedData = { mode, data: json };
+      container.innerHTML = `
+        <div class="ai-panel-title">📝 Quiz Generated — ${json.questions.length} Questions</div>
+        <p class="text-muted" style="font-size:13px;margin-bottom:16px">Click "Start Quiz" to begin your study session.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" style="padding:11px 24px;font-size:14px" onclick="startQuiz(${JSON.stringify(json.questions).replace(/"/g,'&quot;')})">▶ Start Quiz</button>
+        </div>
+        <div class="section-divider"></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          ${json.questions.slice(0,3).map((q,i)=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+            <div style="font-size:12px;color:var(--cyan);margin-bottom:5px;font-family:var(--font-m)">Q${i+1}</div>
+            <div style="font-size:14px;color:var(--white);font-weight:600">${q.q}</div>
+          </div>`).join('')}
+          ${json.questions.length>3?`<div style="text-align:center;font-size:13px;color:var(--text2)">...and ${json.questions.length-3} more questions</div>`:''}
+        </div>`;
+    }catch{ container.innerHTML=`<div class="notes-wrap">${raw.replace(/\n/g,'<br>')}</div>`; }
+  } else if(mode==='flashcards'){
+    try{
+      const clean = raw.replace(/```json|```/g,'').trim();
+      const json = JSON.parse(clean);
+      STATE.generatedData = { mode, data: json };
+      container.innerHTML = `
+        <div class="ai-panel-title">🃏 Flashcards Generated — ${json.flashcards.length} Cards</div>
+        <p class="text-muted" style="font-size:13px;margin-bottom:16px">Tap cards to flip. Use Got It / Again to track progress.</p>
+        <button class="btn btn-primary" style="padding:11px 24px;font-size:14px" onclick="startFlashcards(${JSON.stringify(json.flashcards).replace(/"/g,'&quot;')})">▶ Start Flashcards</button>
+        <div class="section-divider"></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${json.flashcards.slice(0,4).map(f=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;gap:12px">
+            <div style="font-size:13px;font-weight:600;color:var(--white);min-width:140px">${f.front}</div>
+            <div style="font-size:13px;color:var(--text2)">${f.back}</div>
+          </div>`).join('')}
+          ${json.flashcards.length>4?`<div style="text-align:center;font-size:13px;color:var(--text2)">...and ${json.flashcards.length-4} more cards</div>`:''}
+        </div>`;
+    }catch{ container.innerHTML=`<div class="notes-wrap">${raw.replace(/\n/g,'<br>')}</div>`; }
+  } else if(mode==='notes'){
+    container.innerHTML = `
+      <div class="ai-panel-title">📒 Smart Notes</div>
+      <div class="notes-wrap" id="notes-content"></div>`;
+    document.getElementById('notes-content').innerHTML = markdownToHTML(raw);
+  } else if(mode==='audio'){
+    container.innerHTML = `
+      <div class="ai-panel-title">🎧 Audiobook Script</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="audio-play-btn" style="padding:10px 22px;font-size:14px" onclick="toggleSpeech('${encodeURIComponent(raw)}')">▶ Play</button>
+        <button class="btn btn-outline" style="padding:10px 22px;font-size:14px" onclick="stopSpeech()">⏹ Stop</button>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)">
+          Speed: <input type="range" min="0.5" max="2" step="0.25" value="1" id="speech-rate" style="width:80px"> <span id="rate-label">1x</span>
+        </div>
+      </div>
+      <div class="notes-wrap" style="white-space:pre-line;font-family:var(--font-b);color:var(--text);">${raw}</div>`;
+    document.getElementById('speech-rate').oninput = function(){ document.getElementById('rate-label').textContent=this.value+'x'; };
+  }
+}
+
+// ═══════════════════════════════
+// QUIZ MODE
+// ═══════════════════════════════
+function startQuiz(questions){
+  STATE.quizState = { questions, current:0, score:0, answered:false };
+  openPanel('study');
+  renderQuiz();
+}
+
+function renderQuiz(){
+  const panel = document.getElementById('study-content');
+  const msg   = document.getElementById('study-select-msg');
+  msg.style.display='none'; panel.style.display='block';
+  const qs = STATE.quizState;
+  if(!qs) return;
+
+  if(qs.current >= qs.questions.length){
+    const pct = Math.round((qs.score/qs.questions.length)*100);
+    panel.innerHTML=`
+      <div class="panel-header"><div><div class="panel-title">Quiz Complete! 🎉</div></div><button class="btn btn-outline" style="padding:10px 20px;font-size:14px" onclick="openPanel('ai')">← Back to AI Hub</button></div>
+      <div class="quiz-score">
+        <div class="score-big">${qs.score}/${qs.questions.length}</div>
+        <div class="score-label">${pct}% — ${pct>=80?'Excellent! 🌟':pct>=60?'Good job! 👍':'Keep practicing! 💪'}</div>
+        <div class="section-divider"></div>
+        <button class="btn btn-primary" onclick="restartQuiz()" style="margin:0 auto">🔄 Retry Quiz</button>
+      </div>`;
+    return;
+  }
+
+  const q = qs.questions[qs.current];
+  const prog = ((qs.current)/qs.questions.length)*100;
+
+  panel.innerHTML=`
+    <div class="panel-header">
+      <div><div class="panel-title">Quiz Mode</div></div>
+      <button class="btn btn-outline" style="padding:10px 20px;font-size:14px" onclick="openPanel('ai')">← Hub</button>
+    </div>
+    <div class="quiz-progress">
+      <div class="quiz-prog-bar"><div class="quiz-prog-fill" style="width:${prog}%"></div></div>
+      <div class="quiz-prog-text">Question ${qs.current+1} of ${qs.questions.length} · Score: ${qs.score}</div>
+    </div>
+    <div class="quiz-wrap">
+      <div class="quiz-question-card">
+        <div class="quiz-q-num">Question ${qs.current+1}</div>
+        <div class="quiz-q-text">${q.q}</div>
+      </div>
+      <div class="quiz-options">
+        ${q.options.map((opt,i)=>`<button class="quiz-option" data-idx="${i}" onclick="answerQuiz(${i})">${['A','B','C','D'][i]}<span class="opt-letter">${['A','B','C','D'][i]}</span>${opt.replace(/^[A-D]\.\s*/,'')}</button>`).join('')}
+      </div>
+      <div class="quiz-explanation" id="quiz-exp">${q.explanation||''}</div>
+      <div class="quiz-nav">
+        <div></div>
+        <button class="btn btn-primary" id="quiz-next-btn" style="display:none;padding:10px 24px;font-size:14px" onclick="nextQuestion()">Next →</button>
+      </div>
+    </div>`;
+}
+
+function answerQuiz(idx){
+  const qs = STATE.quizState;
+  if(!qs || qs.answered) return;
+  qs.answered = true;
+  const q = qs.questions[qs.current];
+  const opts = document.querySelectorAll('.quiz-option');
+  opts.forEach(o=>o.classList.add('answered'));
+  if(idx===q.answer){ opts[idx].classList.add('correct'); qs.score++; }
+  else { opts[idx].classList.add('selected-wrong'); opts[q.answer].classList.add('correct'); }
+  document.getElementById('quiz-exp').classList.add('show');
+  document.getElementById('quiz-next-btn').style.display='flex';
+}
+
+function nextQuestion(){
+  STATE.quizState.current++; STATE.quizState.answered=false;
+  renderQuiz();
+}
+
+function restartQuiz(){
+  STATE.quizState.current=0; STATE.quizState.score=0; STATE.quizState.answered=false;
+  renderQuiz();
+}
+
+// ═══════════════════════════════
+// FLASHCARD MODE
+// ═══════════════════════════════
+function startFlashcards(cards){
+  STATE.flashState = { cards, current:0, known:[], again:[], flipped:false };
+  openPanel('study');
+  renderFlashcard();
+}
+
+function renderFlashcard(){
+  const panel = document.getElementById('study-content');
+  const msg   = document.getElementById('study-select-msg');
+  msg.style.display='none'; panel.style.display='block';
+  const fs = STATE.flashState;
+  if(!fs) return;
+
+  if(fs.current >= fs.cards.length){
+    panel.innerHTML=`
+      <div class="panel-header"><div><div class="panel-title">Flashcards Done! 🎉</div></div><button class="btn btn-outline" style="padding:10px 20px;font-size:14px" onclick="openPanel('ai')">← Back</button></div>
+      <div class="quiz-score">
+        <div class="score-big">${fs.known.length}/${fs.cards.length}</div>
+        <div class="score-label">Cards marked "Got It"</div>
+        <div class="section-divider"></div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          ${fs.again.length?`<button class="btn btn-outline" onclick="retryAgain()" style="padding:10px 20px;font-size:14px">🔄 Retry ${fs.again.length} Missed</button>`:''}
+          <button class="btn btn-primary" onclick="restartFlash()" style="padding:10px 20px;font-size:14px">🔄 Restart All</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const card = fs.cards[fs.current];
+  const prog = fs.current;
+  const dots = fs.cards.map((_, i) => {
+    let cls = '';
+    if(fs.known.includes(i)) cls='known';
+    else if(fs.again.includes(i)) cls='again';
+    else if(i===fs.current) cls='current';
+    return `<div class="fc-dot ${cls}"></div>`;
+  }).join('');
+
+  panel.innerHTML=`
+    <div class="panel-header">
+      <div><div class="panel-title">Flashcards</div></div>
+      <button class="btn btn-outline" style="padding:10px 20px;font-size:14px" onclick="openPanel('ai')">← Hub</button>
+    </div>
+    <div style="font-family:var(--font-m);font-size:13px;color:var(--text2);margin-bottom:20px">Card ${fs.current+1} of ${fs.cards.length}</div>
+    <div class="fc-scene">
+      <div class="fc-card-3d" id="fc-card" onclick="flipCard()">
+        <div class="fc-front">
+          <div class="fc-hint">Tap to reveal</div>
+          <div class="fc-text">${card.front}</div>
+        </div>
+        <div class="fc-back">
+          <div class="fc-hint">Definition</div>
+          <div class="fc-text">${card.back}</div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-progress-dots">${dots}</div>
+    <div class="fc-controls mt-24">
+      <button class="fc-btn fc-again" onclick="markCard('again')">✕ Again</button>
+      <button class="fc-btn" onclick="skipCard()">→ Skip</button>
+      <button class="fc-btn fc-got-it" onclick="markCard('known')">✓ Got It</button>
+    </div>`;
+}
+
+function flipCard(){
+  const card = document.getElementById('fc-card');
+  if(card) card.classList.toggle('flipped');
+}
+function markCard(status){
+  const fs = STATE.flashState;
+  if(status==='known') fs.known.push(fs.current);
+  else fs.again.push(fs.current);
+  fs.current++; fs.flipped=false; renderFlashcard();
+}
+function skipCard(){ STATE.flashState.current++; renderFlashcard(); }
+function retryAgain(){
+  const fs = STATE.flashState;
+  const cards = fs.again.map(i=>fs.cards[i]);
+  startFlashcards(cards);
+}
+function restartFlash(){
+  const fs = STATE.flashState;
+  fs.current=0; fs.known=[]; fs.again=[]; renderFlashcard();
+}
+
+// ═══════════════════════════════
+// SPEECH / AUDIO
+// ═══════════════════════════════
+function toggleSpeech(encodedText){
+  const text = decodeURIComponent(encodedText);
+  const btn = document.getElementById('audio-play-btn');
+  if(!window.speechSynthesis){ toast('Text-to-speech not supported in your browser','error'); return; }
+  if(STATE.speaking){ window.speechSynthesis.cancel(); STATE.speaking=false; if(btn) btn.textContent='▶ Play'; return; }
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.rate = parseFloat(document.getElementById('speech-rate')?.value||1);
+  utt.onend = ()=>{ STATE.speaking=false; if(btn) btn.textContent='▶ Play'; };
+  window.speechSynthesis.speak(utt);
+  STATE.speaking=true;
+  if(btn) btn.textContent='⏸ Pause';
+}
+function stopSpeech(){ if(window.speechSynthesis){ window.speechSynthesis.cancel(); STATE.speaking=false; const btn=document.getElementById('audio-play-btn'); if(btn) btn.textContent='▶ Play'; } }
+
+// ═══════════════════════════════
+// MARKDOWN → HTML
+// ═══════════════════════════════
+function markdownToHTML(md){
+  return md
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/`(.+?)`/g,'<code>$1</code>')
+    .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/^[-*] (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/gs, s=>'<ul>'+s+'</ul>')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/^(?!<[hublp])/gm, '<p>').replace(/<p><\/p>/g,'');
+}
+
+// ═══════════════════════════════
+// MODAL & TOAST
+// ═══════════════════════════════
+let _modalCb = null;
+function showModal(title, body, confirmLabel, cb){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').textContent=body;
+  document.getElementById('modal-confirm-btn').textContent=confirmLabel;
+  document.getElementById('modal-overlay').classList.add('open');
+  _modalCb = cb;
+}
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); _modalCb=null; }
+document.getElementById('modal-confirm-btn').onclick=()=>{ if(_modalCb) _modalCb(); closeModal(); };
+document.getElementById('modal-overlay').onclick=(e)=>{ if(e.target===document.getElementById('modal-overlay')) closeModal(); };
+
+function toast(msg, type='info'){
+  const el = document.createElement('div');
+  el.className=`toast ${type}`;
+  const icons={success:'✓',error:'✕',info:'ℹ'};
+  el.innerHTML=`<span>${icons[type]||'ℹ'}</span>${msg}`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(20px)'; el.style.transition='all .3s'; setTimeout(()=>el.remove(),300); }, 3200);
+}
+
+
+// ═══════════════════════════════
+// YOUTUBE NOTES
+// ═══════════════════════════════
+let ytMode = 'notes';
+
+function selectYTMode(btn, mode){
+  document.querySelectorAll('[data-ytmode]').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  ytMode = mode;
+}
+
+function extractVideoId(url){
+  const patterns = [
+    /(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/,
+    /^([A-Za-z0-9_-]{11})$/
+  ];
+  for(const p of patterns){ const m = url.match(p); if(m) return m[1]; }
+  return null;
+}
+
+async function loadYTVideo(){
+  const url = document.getElementById('yt-url-input').value.trim();
+  if(!url){ toast('Please paste a YouTube URL','error'); return; }
+
+  const videoId = extractVideoId(url);
+  if(!videoId){ toast('Could not extract video ID from that URL','error'); return; }
+
+  const btn = document.getElementById('yt-load-btn');
+  btn.textContent = 'Loading…'; btn.disabled = true;
+
+  // Show thumbnail + watch link (iframe embeds are blocked outside YouTube's allowed domains)
+  const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+  const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+  document.getElementById('yt-thumb-img').src = thumbUrl;
+  document.getElementById('yt-watch-link').href = watchUrl;
+  document.getElementById('yt-video-container').style.display = 'block';
+  document.getElementById('yt-transcript-section').style.display = 'block';
+
+  // Fetch video metadata via oEmbed (CORS-friendly)
+  try {
+    const meta = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+    if(meta.ok){
+      const mj = await meta.json();
+      document.getElementById('yt-video-title').textContent = mj.title || '';
+      document.getElementById('yt-video-author').textContent = mj.author_name ? '👤 ' + mj.author_name : '';
+    }
+  } catch(_){}
+
+  // Try to auto-fetch transcript
+  document.getElementById('yt-transcript-status').textContent = '⏳ Fetching transcript…';
+  document.getElementById('yt-transcript-input').value = '';
+
+  const fetched = await tryFetchTranscript(videoId);
+  if(fetched && fetched.length > 100){
+    document.getElementById('yt-transcript-input').value = fetched;
+    document.getElementById('yt-transcript-status').textContent = '✅ Transcript loaded automatically';
+    toast('Transcript fetched!', 'success');
+  } else {
+    document.getElementById('yt-transcript-status').textContent = '⚠️ Auto-fetch failed — paste manually';
+    toast('Could not auto-fetch transcript. Paste it manually from YouTube.', 'info');
+  }
+
+  // Enable generate button
+  const genBtn = document.getElementById('yt-gen-btn');
+  genBtn.disabled = false;
+  document.getElementById('yt-gen-text').textContent = '✨ Generate';
+  btn.textContent = 'Reload'; btn.disabled = false;
+}
+
+async function tryFetchTranscript(videoId){
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`,
+    `https://corsproxy.io/?${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`
+  ];
+
+  for(const proxyUrl of proxies){
+    try{
+      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+      if(!res.ok) continue;
+      const html = await res.text();
+
+      // Extract captions URL from page source
+      const captionMatch = html.match(/"captionTracks":\s*\[\{[^}]*"baseUrl":"([^"]+)"/);
+      if(captionMatch){
+        const captionUrl = captionMatch[1].replace(/\\u0026/g,'&').replace(/\\/g,'');
+        const capRes = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(captionUrl)}`);
+        if(capRes.ok){
+          const xml = await capRes.text();
+          // Parse XML captions
+          const texts = [...xml.matchAll(/<text[^>]*>([^<]*)<\/text>/g)];
+          const transcript = texts.map(m => m[1]
+            .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#39;/g,"'").replace(/&quot;/g,'"')
+          ).join(' ').replace(/\s+/g,' ').trim();
+          if(transcript.length > 80) return transcript;
+        }
+      }
+
+      // Fallback: try to find description
+      const descMatch = html.match(/"shortDescription":"((?:[^"\\]|\\.)*)"/);
+      if(descMatch){
+        const desc = descMatch[1].replace(/\\n/g,'\n').replace(/\\"/g,'"');
+        if(desc.length > 50) return `[Video Description]\n${desc}`;
+      }
+    } catch(_){ continue; }
+  }
+  return null;
+}
+
+async function generateYTNotes(){
+  const transcript = document.getElementById('yt-transcript-input').value.trim();
+  const title = document.getElementById('yt-video-title').textContent || 'this YouTube video';
+
+  if(!transcript || transcript.length < 30){
+    toast('Please add transcript content first (auto or manual paste)','error'); return;
+  }
+
+  const apiKey = getKey();
+  if(!apiKey || !apiKey.startsWith('AIza')){
+    toast('Add your Gemini API key in the bar at the bottom','error'); return;
+  }
+
+  const btn = document.getElementById('yt-gen-btn');
+  btn.disabled = true;
+  document.getElementById('yt-gen-text').textContent = 'Generating…';
+  document.getElementById('yt-placeholder').style.display='none';
+  document.getElementById('yt-result-container').style.display='block';
+  document.getElementById('yt-result-container').innerHTML=`<div class="loading-state"><div class="spinner"></div><p>AI is analysing the video…</p></div>`;
+
+  const prompts = {
+    notes: `You are an expert educational AI. The following is a transcript from a YouTube video titled "${title}".
+Create comprehensive, well-structured smart notes from this video. Format as markdown with:
+- # Title
+- ## Key sections
+- **Bold** for important terms
+- Bullet points for key facts
+- A "## Key Takeaways" section at the end
+Transcript: ${transcript.slice(0,5000)}`,
+
+    quiz: `You are an expert educational AI. The following is a transcript from a YouTube video titled "${title}".
+Generate a quiz based on the video content.
+Return ONLY valid JSON (no markdown):
+{"questions":[{"q":"question","options":["A. opt","B. opt","C. opt","D. opt"],"answer":0,"explanation":"brief explanation"}]}
+Generate 6 multiple choice questions. "answer" is the index (0-3) of the correct option.
+Transcript: ${transcript.slice(0,5000)}`,
+
+    flashcards: `You are an expert educational AI. The following is a transcript from a YouTube video titled "${title}".
+Create flashcards from the key concepts.
+Return ONLY valid JSON (no markdown):
+{"flashcards":[{"front":"term or question","back":"definition or answer"}]}
+Generate 10 flashcards.
+Transcript: ${transcript.slice(0,5000)}`,
+
+    summary: `You are an expert educational AI. The following is a transcript from a YouTube video titled "${title}".
+Write a concise, well-organized summary of this video in plain English. Cover: the main topic, key points discussed, important conclusions, and who would benefit from watching this video. Keep it under 300 words. Use paragraph form, not bullet points.
+Transcript: ${transcript.slice(0,5000)}`,
+  };
+
+  try{
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+      },
+      body: JSON.stringify({
+        contents:[{parts:[{text: prompts[ytMode]}]}],
+        generationConfig:{ maxOutputTokens:2000 }
+      })
+    });
+    let data;
+    try { data = await response.json(); } catch(jsonErr) {
+      throw new Error('Server returned non-JSON response (status '+response.status+')');
+    }
+    if(!response.ok || data.error){
+      const msg = (data.error && (data.error.message || JSON.stringify(data.error))) || ('HTTP '+response.status);
+      throw new Error(msg);
+    }
+    if(!data.candidates || !data.candidates[0]){
+      throw new Error('Unexpected response: '+JSON.stringify(data).slice(0,200));
+    }
+    const raw = data.candidates[0].content.parts.map(p=>p.text||'').join('');
+    if(!raw) throw new Error('Empty response from API');
+    renderYTOutput(ytMode, raw, title);
+    toast('Notes generated!','success');
+  } catch(err){
+    document.getElementById('yt-result-container').innerHTML=`<div class="ai-placeholder"><div class="ai-placeholder-icon">❌</div><p>Generation failed.<br><small style="color:var(--red)">${err.message}</small></p></div>`;
+    toast('Generation failed: '+err.message,'error');
+  } finally{
+    btn.disabled=false;
+    document.getElementById('yt-gen-text').textContent='✨ Generate';
+  }
+}
+
+function renderYTOutput(mode, raw, title){
+  const container = document.getElementById('yt-result-container');
+  if(mode==='notes'){
+    container.innerHTML=`<div class="ai-panel-title">📒 Smart Notes — ${title}</div><div class="notes-wrap" id="yt-notes-content"></div>`;
+    document.getElementById('yt-notes-content').innerHTML = markdownToHTML(raw);
+  } else if(mode==='summary'){
+    container.innerHTML=`<div class="ai-panel-title">✂️ Summary</div><div class="notes-wrap"><p>${raw.replace(/\n\n/g,'</p><p>').replace(/\n/g,' ')}</p></div>`;
+  } else if(mode==='quiz'){
+    try{
+      const json = JSON.parse(raw.replace(/\`\`\`json|\`\`\`/g,'').trim());
+      container.innerHTML=`
+        <div class="ai-panel-title">📝 Quiz — ${json.questions.length} Questions</div>
+        <p class="text-muted" style="font-size:13px;margin-bottom:14px">Based on: ${title}</p>
+        <button class="btn btn-primary" style="padding:10px 22px;font-size:14px;margin-bottom:16px"
+          onclick="startQuiz(${JSON.stringify(json.questions).replace(/"/g,'&quot;')})">▶ Start Quiz in Study Mode</button>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${json.questions.slice(0,3).map((q,i)=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px">
+            <div style="font-size:11px;color:var(--cyan);margin-bottom:4px;font-family:var(--font-m)">Q${i+1}</div>
+            <div style="font-size:14px;color:var(--white);font-weight:600">${q.q}</div>
+          </div>`).join('')}
+          ${json.questions.length>3?`<div style="text-align:center;font-size:13px;color:var(--text2)">…+${json.questions.length-3} more</div>`:''}
+        </div>`;
+    } catch{ container.innerHTML=`<div class="notes-wrap">${raw.replace(/\n/g,'<br>')}</div>`; }
+  } else if(mode==='flashcards'){
+    try{
+      const json = JSON.parse(raw.replace(/\`\`\`json|\`\`\`/g,'').trim());
+      container.innerHTML=`
+        <div class="ai-panel-title">🃏 Flashcards — ${json.flashcards.length} Cards</div>
+        <button class="btn btn-primary" style="padding:10px 22px;font-size:14px;margin-bottom:16px"
+          onclick="startFlashcards(${JSON.stringify(json.flashcards).replace(/"/g,'&quot;')})">▶ Start in Study Mode</button>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${json.flashcards.slice(0,4).map(f=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;gap:12px">
+            <div style="font-size:13px;font-weight:600;color:var(--white);min-width:130px">${f.front}</div>
+            <div style="font-size:13px;color:var(--text2)">${f.back}</div>
+          </div>`).join('')}
+        </div>`;
+    } catch{ container.innerHTML=`<div class="notes-wrap">${raw.replace(/\n/g,'<br>')}</div>`; }
+  }
+}
+
+// ═══════════════════════════════
+// API KEY HELPERS
+// ═══════════════════════════════
+function saveKey(val){ localStorage.setItem('st_apikey', val.trim()); }
+function getKey(){
+  const stored = localStorage.getItem('st_apikey')||'';
+  const inputEl = document.getElementById('api-key-input');
+  const fromInput = inputEl ? inputEl.value.trim() : '';
+  return fromInput || stored;
+}
+
+// pre-fill key input from storage on load
+(function(){
+  const k = localStorage.getItem('st_apikey');
+  if(k){
+    const el = document.getElementById('api-key-input');
+    if(el) el.value = k;
+  }
+})();
+
+// ═══════════════════════════════
+// THEME TOGGLE
+// ═══════════════════════════════
+(function initTheme(){
+  const saved = localStorage.getItem('st_theme');
+  if(saved === 'light') applyTheme('light');
+  else applyTheme('dark');
+})();
+
+function applyTheme(mode){
+  const html = document.documentElement;
+  const btns = document.querySelectorAll('.theme-toggle');
+  if(mode === 'light'){
+    html.classList.add('light');
+    btns.forEach(b => b.textContent = '☀️');
+    localStorage.setItem('st_theme','light');
+  } else {
+    html.classList.remove('light');
+    btns.forEach(b => b.textContent = '🌙');
+    localStorage.setItem('st_theme','dark');
+  }
+}
+
+function toggleTheme(){
+  const isLight = document.documentElement.classList.contains('light');
+  applyTheme(isLight ? 'dark' : 'light');
+}
+
+// ─── Init ───
+if(STATE.currentUser) showView('dashboard');
+</script>
+</body>
+</html>
